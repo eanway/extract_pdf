@@ -79,6 +79,7 @@ df_pdfs_concatenate <- df_pdfs_body %>%
 # print current output to console as an example
 cat(df_pdfs_concatenate$text[1])
 
+
 # Vectorize paragraph ####
 p_load(
   stringr
@@ -96,6 +97,34 @@ abstract <-
   str_to_lower() %>%
   # remove punctuation
   str_remove_all("[[:punct:]]")
+
+
+# Position of words in each document ####
+# input list of words, output list of positions in the document
+standardize_text <- function(text) {
+  text %>%
+    str_squish() %>%
+    # convert to lowercase
+    str_to_lower() %>%
+    # remove punctuation
+    str_remove_all("[[:punct:]]")
+}
+
+get_positions <- function(text, string_to_locate) {
+  vec_words <- text %>%
+    str_split(" ", simplify = TRUE)
+  
+  list(which(vec_words == string_to_locate))
+}
+
+df_pdfs_positions <- df_pdfs_concatenate %>%
+  mutate(
+    text_standard = standardize_text(text), 
+    positions = get_positions(text_standard, "biomimicry")
+  )
+
+# goal is to get a list of every unique word and the positions of that word
+# by page, paragraph, sentence
 
 
 # Export ####
